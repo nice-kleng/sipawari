@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('employee_code')->unique(); // NIP
             $table->string('name');
             $table->string('photo')->nullable();
-            $table->string('position');
-            $table->string('department');
             $table->text('qr_code_path')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

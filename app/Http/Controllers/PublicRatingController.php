@@ -57,7 +57,7 @@ class PublicRatingController extends Controller
             'professionalism' => 'nullable|integer|min:1|max:5',
             'service_speed' => 'nullable|integer|min:1|max:5',
             'comment' => 'nullable|string|max:500',
-            'consent_given' => 'accepted',
+            // 'consent_given' => 'accepted',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.size' => 'NIK harus 16 digit.',
@@ -65,7 +65,7 @@ class PublicRatingController extends Controller
             'phone.required' => 'Nomor telepon wajib diisi.',
             'phone.regex' => 'Nomor telepon hanya boleh berisi angka.',
             'overall_satisfaction.required' => 'Penilaian kepuasan wajib diisi.',
-            'consent_given.accepted' => 'Anda harus menyetujui penggunaan data.',
+            // 'consent_given.accepted' => 'Anda harus menyetujui penggunaan data.',
         ]);
 
         // Find employee
@@ -104,6 +104,7 @@ class PublicRatingController extends Controller
             return redirect()->route('public.rate.success', ['uuid' => $uuid]);
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
 
             return back()->withErrors([
                 'error' => 'Terjadi kesalahan. Silakan coba lagi.'
@@ -121,4 +122,3 @@ class PublicRatingController extends Controller
         return view('public.success', compact('employee'));
     }
 }
-    

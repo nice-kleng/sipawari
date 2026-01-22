@@ -22,7 +22,7 @@
             </p>
 
             <p class="text-gray-500 mb-8">
-                Masukan Anda sangat berharga untuk meningkatkan kualitas pelayanan kami.
+                Bantu Kami untuk lebih baik.
             </p>
 
             <!-- Employee Info -->

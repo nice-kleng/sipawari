@@ -123,7 +123,7 @@
 
                     <!-- Overall Satisfaction -->
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
                             Kepuasan Keseluruhan <span class="text-red-500">*</span>
                         </label>
                         <div class="star-rating flex flex-row-reverse justify-center gap-2">

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Employee;
+use App\Models\Position;
+use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -14,31 +16,15 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        $positions = [
-            'Dokter',
-            'Perawat',
-            'Bidan',
-            'Farmasis',
-            'Radiografer',
-            'Analis Laboratorium',
-            'Administrator',
-        ];
+        $positions = Position::pluck('id', 'name')->toArray();
 
-        $departments = [
-            'Poliklinik Umum',
-            'Ruang Rawat Inap',
-            'IGD',
-            'Laboratorium',
-            'Radiologi',
-            'Farmasi',
-            'Administrasi',
-        ];
+        $departments = Unit::pluck('id', 'name')->toArray();
 
         // Create 10 users and corresponding employees
         User::factory()
             ->count(10)
             ->create()
-            ->each(function (User $user, $index) use ($positions, $departments) {
+            ->each(function (User $user) use ($positions, $departments) {
                 $employeeCode = 'EMP' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
 
                 $user->employee()->create([
@@ -46,8 +32,8 @@ class EmployeeSeeder extends Seeder
                     'employee_code' => $employeeCode,
                     'name' => $user->name,
                     'photo' => null,
-                    'position' => $positions[array_rand($positions)],
-                    'department' => $departments[array_rand($departments)],
+                    'position_id' => $positions[array_rand($positions)],
+                    'unit_id' => $positions[array_rand($positions)],
                     'is_active' => true,
                 ]);
                 $user->assignRole('karyawan');

@@ -59,12 +59,12 @@ class EmployeeResource extends Resource
                         ->visibility('public')
                         ->maxSize(2048),
 
-                    Forms\Components\TextInput::make('position')
+                    Forms\Components\TextInput::make('position.name')
                         ->label('Jabatan')
                         ->required()
                         ->maxLength(255),
 
-                    Forms\Components\TextInput::make('department')
+                    Forms\Components\TextInput::make('unit.name')
                         ->label('Departemen / Unit')
                         ->required()
                         ->maxLength(255),
@@ -120,9 +120,9 @@ class EmployeeResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('department')
-                    ->label('Departemen')
-                    ->options(fn() => Employee::distinct()->pluck('department', 'department')),
+                Tables\Filters\SelectFilter::make('unit')
+                    ->label('Unit')
+                    ->relationship('unit', 'name'),
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Status Aktif'),

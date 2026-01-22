@@ -19,8 +19,8 @@ class Employee extends Model
         'employee_code',
         'name',
         'photo',
-        'position',
-        'department',
+        'position_id',
+        'unit_id',
         'qr_code_path',
         'is_active',
     ];
@@ -54,6 +54,16 @@ class Employee extends Model
     public function ratings()
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
+    }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     // Accessors
