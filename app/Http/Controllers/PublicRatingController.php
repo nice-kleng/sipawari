@@ -29,18 +29,27 @@ class PublicRatingController extends Controller
     public function store(Request $request, string $uuid)
     {
         // Rate limiting: max 5 submissions per minute per IP
-        $executed = RateLimiter::attempt(
-            'submit-rating:' . $request->ip(),
-            $perMinute = 5,
-            function () {},
-            $decaySeconds = 60
-        );
+        // $executed = RateLimiter::attempt(
+        //     'submit-rating:' . $request->ip(),
+        //     $perMinute = 5,
+        //     function () {},
+        //     $decaySeconds = 60
+        // );
+        // if (!$executed) {
+        //     return back()->withErrors([
+        //         'rate_limit' => 'Terlalu banyak percobaan. Silakan coba lagi dalam beberapa saat.'
+        //     ])->withInput();
+        // }
 
-        if (!$executed) {
+        // Rate limiting by IP
+        $key = 'rating-submit:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
             return back()->withErrors([
-                'rate_limit' => 'Terlalu banyak percobaan. Silakan coba lagi dalam beberapa saat.'
+                'error' => "Too many attempts. Please try again in {$seconds} seconds."
             ])->withInput();
         }
+
 
         // Validate input
         $validated = $request->validate([

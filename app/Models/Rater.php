@@ -43,7 +43,7 @@ class Rater extends Model
     // Static method to hash NIK
     public static function hashNik(string $nik): string
     {
-        return Hash::make($nik);
+        return hash('sha256', config('app.key') . $nik);
     }
 
     // Static method to encrypt phone
