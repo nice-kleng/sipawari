@@ -35,10 +35,10 @@ class RoleSeeder extends Seeder
         }
 
         // Assign permissions to karyawan role
-        $karyawan->givePermissionTo([
-            'view_employee',
-            'view_rating',
-        ]);
+        // $karyawan->givePermissionTo([
+        //     'view_employee',
+        //     'view_rating',
+        // ]);
 
         // Super admin gets all permissions automatically via Shield
     }

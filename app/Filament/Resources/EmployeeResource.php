@@ -63,15 +63,15 @@ class EmployeeResource extends Resource
                         ->visibility('public')
                         ->maxSize(2048),
 
-                    Forms\Components\TextInput::make('position.name')
+                    Forms\Components\Select::make('position_id')
+                        ->relationship('jabatan', 'name')
                         ->label('Jabatan')
-                        ->required()
-                        ->maxLength(255),
+                        ->required(),
 
-                    Forms\Components\TextInput::make('unit.name')
+                    Forms\Components\Select::make('unit_id')
+                        ->relationship('unit', 'name')
                         ->label('Departemen / Unit')
-                        ->required()
-                        ->maxLength(255),
+                        ->required(),
 
                     Forms\Components\Toggle::make('is_active')
                         ->label('Aktif')
