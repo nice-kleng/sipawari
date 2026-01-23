@@ -23,7 +23,26 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255)
+                    ->label('Name'),
+                Forms\Components\Select::make('roles')
+                    ->multiple()
+                    ->relationship('roles', 'name')
+                    ->preload()
+                    ->label('Roles'),
+                Forms\Components\TextInput::make('email')
+                    ->required()
+                    ->email()
+                    ->maxLength(255)
+                    ->unique(User::class, 'email', fn(?User $record) => $record)
+                    ->label('Email'),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->required(fn(string $context) => $context === 'create')
+                    ->minLength(8)
+                    ->label('Password'),
             ]);
     }
 
@@ -31,7 +50,9 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')->label('Name'),
+                Tables\Columns\TextColumn::make('email')->label('Email')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Created At')->dateTime(),
             ])
             ->filters([
                 //

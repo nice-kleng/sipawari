@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class EmployeeResource extends Resource
 {
@@ -28,19 +29,25 @@ class EmployeeResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Informasi Pengguna')
+                ->relationship('user')
                 ->schema([
-                    Forms\Components\TextInput::make('user.email')
+                    Forms\Components\TextInput::make('email')
                         ->label('Email')
                         ->email()
                         ->required()
                         ->unique(User::class, 'email', ignoreRecord: true),
 
-                    Forms\Components\TextInput::make('user.password')
+                    Forms\Components\TextInput::make('password')
                         ->label('Password')
                         ->password()
                         ->required(fn($context) => $context === 'create')
                         ->dehydrated(fn($state) => filled($state))
                         ->minLength(8),
+
+                    Forms\Components\Select::make('roles')
+                        ->label('Roles')
+                        ->multiple()
+                        ->relationship('roles', 'name'),
                 ])->columns(2),
 
             Forms\Components\Section::make('Data Karyawan')
@@ -90,12 +97,7 @@ class EmployeeResource extends Resource
 
                     Forms\Components\Placeholder::make('qr_code')
                         ->label('QR Code')
-                        ->content(function (Employee $record): string {
-                            if ($record->qr_code_path && Storage::disk('public')->exists($record->qr_code_path)) {
-                                return '<img src="' . Storage::url($record->qr_code_path) . '" alt="QR Code" class="w-32 h-32">';
-                            }
-                            return 'QR Code will be generated after creation';
-                        })
+                        ->content(fn(Employee $record) => new HtmlString('<a href="' . ($record->qr_code_path ? asset('storage/' . ltrim($record->qr_code_path, '/')) : '#') . '" target="_blank">Link QR Code</a>'))
                         ->extraAttributes(['class' => 'qr-code-preview'])
                         ->columnSpanFull(),
                 ])

@@ -51,13 +51,13 @@ class User extends Authenticatable implements FilamentUser
     // Filament access control
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && $this->hasVerifiedEmail();
+        return $this->is_active;
     }
 
     // Relationship
     public function employee()
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasOne(Employee::class, 'user_id');
     }
 
     // Check if user is an employee
