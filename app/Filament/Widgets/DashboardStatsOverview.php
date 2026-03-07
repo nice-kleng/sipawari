@@ -6,9 +6,11 @@ use App\Models\Employee;
 use App\Models\Rating;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class DashboardStatsOverview extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 1;
 
     protected function getStats(): array

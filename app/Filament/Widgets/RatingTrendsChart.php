@@ -5,9 +5,11 @@ namespace App\Filament\Widgets;
 use App\Models\Rating;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RatingTrendsChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Tren Rating 6 Bulan Terakhir';
     protected static ?int $sort = 2;
 

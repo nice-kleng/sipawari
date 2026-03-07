@@ -6,9 +6,13 @@ use App\Models\Rating;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RatingTerbaruSayaWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Rating Terbaru Saya';
     protected static ?int $sort = 3;
     protected int | string | array $columnSpan = 'full';
@@ -85,12 +89,6 @@ class RatingTerbaruSayaWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('karyawan')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

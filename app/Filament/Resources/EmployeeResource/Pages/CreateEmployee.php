@@ -11,26 +11,32 @@ class CreateEmployee extends CreateRecord
 {
     protected static string $resource = EmployeeResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        // Create user first
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['user']['email'],
-            'password' => Hash::make($data['user']['password']),
-            'is_active' => $data['is_active'] ?? true,
-        ]);
+        // Extract user data
+        $userData = $data['user'] ?? [];
+        
+        // Ensure name and is_active are synced
+        $userData['name'] = $userData['name'] ?? $data['name'];
+        $userData['is_active'] = $userData['is_active'] ?? ($data['is_active'] ?? true);
+        
+        // Extract roles before creating user
+        $roles = $userData['roles'] ?? ['karyawan'];
+        unset($userData['roles']);
 
-        // Assign employee role
-        $user->assignRole('karyawan');
+        // Create user
+        $user = User::create($userData);
 
-        // Add user_id to employee data
+        // Assign roles
+        $user->syncRoles($roles);
+
+        // Link user to employee
         $data['user_id'] = $user->id;
 
-        // Remove user array as it's already processed
+        // Remove user data from employee creation
         unset($data['user']);
 
-        return $data;
+        return static::getModel()::create($data);
     }
 
     protected function getRedirectUrl(): string

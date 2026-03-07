@@ -4,9 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\Rating;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class ServiceQualityMetrics extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Metrik Kualitas Layanan';
     protected static ?string $description = 'Breakdown rata-rata per aspek penilaian';
     protected static ?int $sort = 9;

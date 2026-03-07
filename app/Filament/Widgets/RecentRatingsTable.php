@@ -7,9 +7,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RecentRatingsTable extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 6;
     protected int | string | array $columnSpan = 'full';
 

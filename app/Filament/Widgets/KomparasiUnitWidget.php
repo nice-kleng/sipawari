@@ -7,9 +7,13 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class KomparasiUnitWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Peringkat Unit';
     protected static ?int $sort = 6;
 
@@ -90,12 +94,6 @@ class KomparasiUnitWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('kepala_unit')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

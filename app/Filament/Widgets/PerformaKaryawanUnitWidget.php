@@ -7,9 +7,13 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class PerformaKaryawanUnitWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?int $sort = 2;
     protected int | string | array $columnSpan = 'full';
 
@@ -74,12 +78,6 @@ class PerformaKaryawanUnitWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('kepala_unit')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

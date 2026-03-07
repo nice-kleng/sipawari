@@ -5,9 +5,11 @@ namespace App\Filament\Widgets;
 use App\Models\Unit;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class UnitPerformanceChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Performa Per Unit/Departemen';
     protected static ?int $sort = 5;
 

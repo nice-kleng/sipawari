@@ -8,9 +8,13 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TrenRatingUnitChartWidget extends ChartWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Tren Rating Unit';
     protected static ?int $sort = 3;
     protected int | string | array $columnSpan = 'full';
@@ -99,12 +103,6 @@ class TrenRatingUnitChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('kepala_unit')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

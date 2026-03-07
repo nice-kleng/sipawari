@@ -6,9 +6,13 @@ use App\Models\Employee;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TopPerformersUnitWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Top 5 Performers Unit';
     protected static ?int $sort = 4;
 
@@ -78,12 +82,6 @@ class TopPerformersUnitWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('kepala_unit')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

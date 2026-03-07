@@ -4,9 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\Rating;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RatingDistributionChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Distribusi Rating';
     protected static ?int $sort = 4;
 

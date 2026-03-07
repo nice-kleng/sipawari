@@ -6,9 +6,13 @@ use App\Models\Rating;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TrenRatingSayaChartWidget extends ChartWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Tren Rating Saya';
     protected static ?int $sort = 2;
     protected int | string | array $columnSpan = 'full';
@@ -93,12 +97,6 @@ class TrenRatingSayaChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('karyawan')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

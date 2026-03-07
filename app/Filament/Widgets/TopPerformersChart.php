@@ -4,9 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\Employee;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class TopPerformersChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Top 10 Karyawan Terbaik';
     protected static ?int $sort = 3;
 

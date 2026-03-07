@@ -7,9 +7,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class EmployeePerformanceMonitor extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 8;
     protected int | string | array $columnSpan = 'full';
 

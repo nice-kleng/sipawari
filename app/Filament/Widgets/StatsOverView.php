@@ -6,9 +6,13 @@ use App\Models\Employee;
 use App\Models\Rating;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class StatsOverview extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected function getStats(): array
     {
         $totalEmployees = Employee::where('is_active', true)->count();
@@ -44,6 +48,6 @@ class StatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return auth()->user()->hasRole('super_admin');
+        return static::canViewShield();
     }
 }

@@ -5,9 +5,11 @@ namespace App\Filament\Widgets;
 use App\Models\Rater;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class DemographicsInsightsWidget extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Demografi Penilai';
     protected static ?int $sort = 11;
 

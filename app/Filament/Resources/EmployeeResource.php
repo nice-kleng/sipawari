@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
+use Spatie\Permission\Models\Role;
 
 class EmployeeResource extends Resource
 {
@@ -29,8 +30,9 @@ class EmployeeResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Informasi Pengguna')
-                ->relationship('user')
+                ->statePath('user')
                 ->schema([
+                    Forms\Components\Hidden::make('name'),
                     Forms\Components\TextInput::make('email')
                         ->label('Email')
                         ->email()
@@ -47,7 +49,12 @@ class EmployeeResource extends Resource
                     Forms\Components\Select::make('roles')
                         ->label('Roles')
                         ->multiple()
-                        ->relationship('roles', 'name'),
+                        ->preload()
+                        ->options(Role::all()->pluck('name', 'id'))
+                        ->default(['karyawan']),
+
+                    Forms\Components\Hidden::make('is_active')
+                        ->default(true),
                 ])->columns(2),
 
             Forms\Components\Section::make('Data Karyawan')
@@ -61,7 +68,9 @@ class EmployeeResource extends Resource
                     Forms\Components\TextInput::make('name')
                         ->label('Nama Lengkap')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(fn($state, Forms\Set $set) => $set('user.name', $state)),
 
                     Forms\Components\FileUpload::make('photo')
                         ->label('Foto')
@@ -83,7 +92,9 @@ class EmployeeResource extends Resource
                     Forms\Components\Toggle::make('is_active')
                         ->label('Aktif')
                         ->default(true)
-                        ->required(),
+                        ->required()
+                        ->live()
+                        ->afterStateUpdated(fn($state, Forms\Set $set) => $set('user.is_active', $state)),
                 ])->columns(2),
             Forms\Components\Section::make('QR Code & UUID')
                 ->schema([

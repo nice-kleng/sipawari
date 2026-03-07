@@ -6,9 +6,11 @@ use App\Models\Rating;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class FlaggedRatingsWidget extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 7;
     protected int | string | array $columnSpan = 'full';
 

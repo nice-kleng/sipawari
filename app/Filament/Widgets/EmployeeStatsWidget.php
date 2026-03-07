@@ -6,9 +6,13 @@ use App\Models\Rating;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class EmployeeStatsWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?int $sort = 1;
 
     protected function getStats(): array
@@ -16,7 +20,7 @@ class EmployeeStatsWidget extends BaseWidget
         $user = Auth::user();
 
         // Only show for employees
-        if (!$user->hasRole('karyawan') || !$user->employee) {
+        if (!$user->employee) {
             return [];
         }
 
@@ -65,6 +69,6 @@ class EmployeeStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return Auth::user()?->hasRole('karyawan') ?? false;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

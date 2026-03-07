@@ -5,9 +5,13 @@ namespace App\Filament\Widgets;
 use App\Models\Rating;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RatingSayaStatsWidget extends BaseWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?int $sort = 1;
 
     protected function getStats(): array
@@ -76,12 +80,6 @@ class RatingSayaStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('karyawan')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }

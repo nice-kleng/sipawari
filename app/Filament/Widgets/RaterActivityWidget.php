@@ -6,9 +6,11 @@ use App\Models\Rater;
 use App\Models\Rating;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class RaterActivityWidget extends BaseWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 10;
 
     protected function getStats(): array

@@ -5,9 +5,13 @@ namespace App\Filament\Widgets;
 use App\Models\Rating;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class BreakdownAspekPenilaianUnitWidget extends ChartWidget
 {
+    use HasWidgetShield {
+        canView as canViewShield;
+    }
     protected static ?string $heading = 'Breakdown Aspek Penilaian Unit';
     protected static ?int $sort = 8;
 
@@ -84,12 +88,6 @@ class BreakdownAspekPenilaianUnitWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        if (!$user->hasRole('kepala_unit')) {
-            return false;
-        }
-
-        return $user->employee !== null;
+        return static::canViewShield() && auth()->user()->employee !== null;
     }
 }
