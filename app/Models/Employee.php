@@ -21,6 +21,7 @@ class Employee extends Model
         'photo',
         'position_id',
         'unit_id',
+        'manager_id',
         'qr_code_path',
         'is_active',
     ];
@@ -64,6 +65,34 @@ class Employee extends Model
     public function jabatan()
     {
         return $this->belongsTo(Position::class, 'position_id');
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function subordinates()
+    {
+        return $this->hasMany(Employee::class, 'manager_id');
+    }
+
+    /**
+     * Recursively fetch all subordinate IDs for this employee
+     */
+    public function allSubordinateIds(): array
+    {
+        $ids = [];
+        $subordinates = $this->subordinates()->pluck('id')->toArray();
+        
+        $ids = array_merge($ids, $subordinates);
+        
+        // Fetch subordinates of subordinates (recursively without N+1 if possible, but simplest is eager load)
+        foreach ($this->subordinates()->with('subordinates')->get() as $sub) {
+            $ids = array_merge($ids, $sub->allSubordinateIds());
+        }
+        
+        return array_unique($ids);
     }
 
     // Accessors

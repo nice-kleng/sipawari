@@ -37,7 +37,7 @@ class EmployeeResource extends Resource
                         ->label('Email')
                         ->email()
                         ->required()
-                        ->unique(User::class, 'email', ignoreRecord: true),
+                        ->unique(User::class, 'email', ignorable: fn (?Employee $record) => $record?->user),
 
                     Forms\Components\TextInput::make('password')
                         ->label('Password')
@@ -88,6 +88,13 @@ class EmployeeResource extends Resource
                         ->relationship('unit', 'name')
                         ->label('Departemen / Unit')
                         ->required(),
+                        
+                    Forms\Components\Select::make('manager_id')
+                        ->relationship('manager', 'name')
+                        ->label('Atasan / Manajer')
+                        ->searchable()
+                        ->preload()
+                        ->nullable(),
 
                     Forms\Components\Toggle::make('is_active')
                         ->label('Aktif')
@@ -158,19 +165,18 @@ class EmployeeResource extends Resource
                 Tables\Columns\TextColumn::make('unit.name')
                     ->label('Unit')
                     ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('manager.name')
+                    ->label('Atasan')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('jabatan.name')
                     ->label('Jabatan')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('averageRating')
-                    ->label('Rating')
-                    ->getStateUsing(fn($record) => number_format($record->averageRating(), 1))
-                    ->badge()
-                    ->color(fn($state) => $state >= 4 ? 'success' : ($state >= 3 ? 'warning' : 'danger')),
-
                 Tables\Columns\TextColumn::make('average_rating')
-                    ->label('Avg. Rating')
+                    ->label('Rating')
                     ->getStateUsing(fn(Employee $record) => number_format($record->averageRating(), 2))
                     ->badge()
                     ->color(fn($state) => match (true) {

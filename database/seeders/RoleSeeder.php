@@ -14,8 +14,8 @@ class RoleSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create roles
-        $superAdmin = Role::create(['name' => 'super_admin']);
-        $karyawan = Role::create(['name' => 'karyawan']);
+        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        $karyawan = Role::firstOrCreate(['name' => 'karyawan']);
 
         // Define permissions for employees
         $employeePermissions = [
@@ -29,9 +29,15 @@ class RoleSeeder extends Seeder
             'view_any_rating',
         ];
 
+        // Define dashboard scope permissions
+        $dashboardScopePermissions = [
+            'view_global_dashboard',
+            'view_team_dashboard',
+        ];
+
         // Create all permissions
-        foreach (array_merge($employeePermissions, $ratingPermissions) as $permission) {
-            Permission::create(['name' => $permission]);
+        foreach (array_merge($employeePermissions, $ratingPermissions, $dashboardScopePermissions) as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Assign permissions to karyawan role

@@ -8,13 +8,14 @@ use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
-class TrenRatingSayaChartWidget extends ChartWidget
+class StafChartWidget extends ChartWidget
 {
     use HasWidgetShield {
         canView as canViewShield;
     }
+
     protected static ?string $heading = 'Tren Rating Saya';
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 21;
     protected int | string | array $columnSpan = 'full';
 
     public ?string $filter = '30';
@@ -22,9 +23,9 @@ class TrenRatingSayaChartWidget extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            '7' => '7 Hari Terakhir',
-            '30' => '30 Hari Terakhir',
-            '90' => '3 Bulan Terakhir',
+            '7'   => '7 Hari Terakhir',
+            '30'  => '30 Hari Terakhir',
+            '90'  => '3 Bulan Terakhir',
             '180' => '6 Bulan Terakhir',
         ];
     }
@@ -34,39 +35,31 @@ class TrenRatingSayaChartWidget extends ChartWidget
         $employee = auth()->user()->employee;
 
         if (!$employee) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
+            return ['datasets' => [], 'labels' => []];
         }
 
-        $days = (int) $this->filter;
+        $days  = (int) $this->filter;
         $start = now()->subDays($days);
-        $end = now();
+        $end   = now();
 
         $data = Trend::query(
             Rating::query()
                 ->where('employee_id', $employee->id)
                 ->where('is_approved', true)
         )
-            ->between(
-                start: $start,
-                end: $end,
-            )
+            ->between(start: $start, end: $end)
             ->perDay()
             ->average('overall_satisfaction');
 
         return [
-            'datasets' => [
-                [
-                    'label' => 'Rating Keseluruhan',
-                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
-                    'borderColor' => 'rgb(59, 130, 246)',
-                    'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
-                    'fill' => true,
-                ],
-            ],
-            'labels' => $data->map(fn(TrendValue $value) => $value->date),
+            'datasets' => [[
+                'label'           => 'Rata-rata Rating Harian',
+                'data'            => $data->map(fn(TrendValue $v) => $v->aggregate),
+                'borderColor'     => 'rgb(59, 130, 246)',
+                'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
+                'fill'            => true,
+            ]],
+            'labels' => $data->map(fn(TrendValue $v) => $v->date),
         ];
     }
 
@@ -81,22 +74,19 @@ class TrenRatingSayaChartWidget extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
-                    'max' => 5,
-                    'ticks' => [
-                        'stepSize' => 0.5,
-                    ],
+                    'max'         => 5,
+                    'ticks'       => ['stepSize' => 0.5],
                 ],
             ],
-            'plugins' => [
-                'legend' => [
-                    'display' => true,
-                ],
-            ],
+            'plugins' => ['legend' => ['display' => true]],
         ];
     }
 
     public static function canView(): bool
     {
-        return static::canViewShield() && auth()->user()->employee !== null;
+        return static::canViewShield()
+            && auth()->user()->employee !== null
+            && !auth()->user()->hasPermissionTo('view_team_dashboard')
+            && !auth()->user()->hasPermissionTo('view_global_dashboard');
     }
 }

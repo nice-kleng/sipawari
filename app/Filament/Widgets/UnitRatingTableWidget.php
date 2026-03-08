@@ -8,13 +8,14 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
-class RatingTerbaruSayaWidget extends BaseWidget
+class UnitRatingTableWidget extends BaseWidget
 {
     use HasWidgetShield {
         canView as canViewShield;
     }
-    protected static ?string $heading = 'Rating Terbaru Saya';
-    protected static ?int $sort = 3;
+
+    protected static ?string $heading = 'Rating Terbaru di Unit';
+    protected static ?int $sort = 13;
     protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
@@ -25,63 +26,56 @@ class RatingTerbaruSayaWidget extends BaseWidget
             return $table->query(Rating::query()->whereRaw('1 = 0'));
         }
 
+        $subordinateIds = $employee->allSubordinateIds();
+        $teamIds = array_merge([$employee->id], $subordinateIds);
+
         return $table
             ->query(
                 Rating::query()
-                    ->where('employee_id', $employee->id)
+                    ->whereIn('employee_id', $teamIds)
                     ->where('is_approved', true)
+                    ->with(['employee', 'employee.jabatan'])
                     ->latest()
             )
+            ->heading('Rating Terbaru di Tim')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal')
-                    ->dateTime('d M Y H:i')
-                    ->sortable(),
+                    ->label('Tanggal')->dateTime('d M Y H:i')->sortable(),
+
+                Tables\Columns\TextColumn::make('employee.name')
+                    ->label('Karyawan')->searchable(),
+
+                Tables\Columns\TextColumn::make('employee.jabatan.name')
+                    ->label('Jabatan'),
 
                 Tables\Columns\TextColumn::make('overall_satisfaction')
-                    ->label('Kepuasan')
-                    ->badge()
+                    ->label('Kepuasan')->badge()
                     ->color(fn($state) => match (true) {
-                        $state >= 4.5 => 'success',
-                        $state >= 4.0 => 'primary',
-                        $state >= 3.0 => 'warning',
-                        default => 'danger'
+                        $state >= 4 => 'success',
+                        $state >= 3 => 'warning',
+                        default     => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('friendliness')
-                    ->label('Keramahan')
-                    ->alignCenter(),
+                    ->label('Keramahan')->alignCenter(),
 
                 Tables\Columns\TextColumn::make('professionalism')
-                    ->label('Profesional')
-                    ->alignCenter(),
+                    ->label('Profesional')->alignCenter(),
 
                 Tables\Columns\TextColumn::make('service_speed')
-                    ->label('Kecepatan')
-                    ->alignCenter(),
+                    ->label('Kecepatan')->alignCenter(),
 
                 Tables\Columns\TextColumn::make('average_score')
                     ->label('Rata-rata')
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->badge()
                     ->color(fn($state) => match (true) {
-                        $state >= 4.5 => 'success',
-                        $state >= 4.0 => 'primary',
-                        $state >= 3.0 => 'warning',
-                        default => 'danger'
+                        $state >= 4 => 'success', $state >= 3 => 'warning', default => 'danger',
                     }),
 
                 Tables\Columns\TextColumn::make('comment')
-                    ->label('Komentar')
-                    ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
-                        $state = $column->getState();
-                        if (strlen($state) <= 50) {
-                            return null;
-                        }
-                        return $state;
-                    })
-                    ->wrap(),
+                    ->label('Komentar')->limit(30)
+                    ->tooltip(fn(Tables\Columns\TextColumn $col) => strlen($col->getState()) > 30 ? $col->getState() : null),
             ])
             ->defaultSort('created_at', 'desc')
             ->defaultPaginationPageOption(10);
@@ -89,6 +83,8 @@ class RatingTerbaruSayaWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return static::canViewShield() && auth()->user()->employee !== null;
+        return static::canViewShield()
+            && auth()->user()->hasPermissionTo('view_team_dashboard')
+            && auth()->user()->employee !== null;
     }
 }
